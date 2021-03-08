@@ -45,6 +45,19 @@ export class TodoItemAccess {
     return result.Attributes as TodoItem;
   }
 
+  async deleteTodo(todoId: string, userId: string) {
+    console.log('deleting todo', todoId);
+    await this.docClient.delete({
+      TableName: this.todoTable,
+      Key: {
+        todoId,
+        userId
+      },
+    }).promise(); 
+
+    console.log('successfully deleted todo')
+  }
+
   async getTodos(userId: string): Promise<TodoItem[]> {
     console.log('fetching user todos')
     const todos = await this.docClient.query({
