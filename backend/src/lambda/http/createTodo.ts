@@ -7,6 +7,7 @@ import { TodoItem } from '../../models/TodoItem'
 import { getUserId } from '../utils'
 
 const todoAccess = new TodoItemAccess()
+const bucketName = process.env.TODOS_BUCKET;
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newTodoItem: CreateTodoRequest = JSON.parse(event.body)
@@ -19,7 +20,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     ...newTodoItem,
     createdAt: new Date().toISOString(),
     done: false,
-    attachmentUrl: "",
+    attachmentUrl: `https://${bucketName}.s3.amazonaws.com/${id}`,
     todoId: id,
     userId
   }
