@@ -5,8 +5,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } f
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
 import { TodoItemAccess } from '../todoAccess'
 import { getUserId } from '../utils'
+import { createLogger } from '../../utils/logger'
 
 const todoAccess = new TodoItemAccess()
+const logger = createLogger('update todo')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
@@ -25,7 +27,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       body: JSON.stringify({ item: fullTodoItem })
     }
   } catch (error) {
-    console.log('error updating todo', error)
+    logger.error('error fetching todos', { key: error })
     return {
       statusCode: 400,
       headers: {

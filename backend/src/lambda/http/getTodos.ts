@@ -3,11 +3,13 @@ import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 import { TodoItemAccess } from '../todoAccess';
 import { getUserId } from '../utils';
+import { createLogger } from '../../utils/logger';
 const todosAccess = new TodoItemAccess();
+const logger = createLogger('get todos')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    const userId = getUserId(event)
+    const userId = getUserId(event);
     const allTodos = await todosAccess.getTodos(userId);
     return {
       statusCode: 200,
@@ -21,7 +23,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     }
 
   } catch(e) {
-    console.log(e)
+    logger.error('error fetching todos', { key: e })
     return {
       statusCode: 400,
       headers: {

@@ -5,16 +5,16 @@ import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import * as uuid from 'uuid'
 import { TodoItem } from '../../models/TodoItem'
 import { getUserId } from '../utils'
+import { createLogger } from '../../utils/logger'
 
 const todoAccess = new TodoItemAccess()
 const bucketName = process.env.TODOS_BUCKET;
+const logger = createLogger('create todos')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newTodoItem: CreateTodoRequest = JSON.parse(event.body)
-  console.log(newTodoItem)
   const id = uuid.v4();
   const userId = getUserId(event);
-  console.log('user id', userId)
   
   const fullTodoItem: TodoItem = {
     ...newTodoItem,
@@ -37,7 +37,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       body: JSON.stringify({ item: fullTodoItem })
     }
   } catch (error) {
-    console.log('error creating todo', error)
+    logger.error('error fetching todos', { key: error })
     return {
       statusCode: 400,
       headers: {

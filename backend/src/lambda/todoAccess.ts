@@ -2,6 +2,8 @@ import * as AWS from 'aws-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { TodoItem } from '../models/TodoItem';
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
+import { createLogger } from '../utils/logger';
+const logger = createLogger('todos')
 
 export class TodoItemAccess {
   constructor(
@@ -11,7 +13,7 @@ export class TodoItemAccess {
   ) {}
 
   async createTodo(todo: TodoItem ): Promise<TodoItem> {
-    console.log('full todo to be created', todo)
+    logger.info('creating todo', { key: todo})
     await this.docClient.put({
       TableName: this.todoTable,
       Item: todo
@@ -21,7 +23,7 @@ export class TodoItemAccess {
   }
 
   async updateTodo(todoId: string, userId: string, todoBody: UpdateTodoRequest): Promise<TodoItem> {
-    console.log('updating todo', todoId, ' with: ', todoBody)
+    logger.info('updating todo', { key: todoBody})
     const result = await this.docClient.update({
       TableName: this.todoTable,
       Key: {
@@ -40,13 +42,13 @@ export class TodoItemAccess {
       ReturnValues: 'ALL_NEW'
     }).promise();
 
-    console.log('Todo updated successfully', result);
+    logger.info('updated successfully')
 
     return result.Attributes as TodoItem;
   }
 
   async deleteTodo(todoId: string, userId: string) {
-    console.log('deleting todo', todoId);
+    logger.info('deleting todo')
     await this.docClient.delete({
       TableName: this.todoTable,
       Key: {
@@ -55,11 +57,11 @@ export class TodoItemAccess {
       },
     }).promise(); 
 
-    console.log('successfully deleted todo')
+    logger.info('successfully deleted todo')
   }
 
   async getTodos(userId: string): Promise<TodoItem[]> {
-    console.log('fetching user todos')
+    logger.info('fetching user todos')
     const todos = await this.docClient.query({
       TableName: this.todoTable,
       IndexName: this.index,
@@ -69,6 +71,8 @@ export class TodoItemAccess {
       }
     }).promise()
 
+    logger.info('fetched all todos')
+
     return todos!.Items as TodoItem[];
   }
 }
@@ -76,7 +80,7 @@ export class TodoItemAccess {
 
   function createDynamoDBClient() {
     if (process.env.IS_OFFLINE) {
-      console.log('creating local db instance')
+      logger.info('creating local db instance')
       return new AWS.DynamoDB.DocumentClient({
         region: 'localhost',
         endpoint: 'http://localhost:8000'
