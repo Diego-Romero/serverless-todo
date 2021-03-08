@@ -11,6 +11,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     const allTodos = await todosAccess.getTodos(userId);
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
+      },
       body: JSON.stringify({
         items: allTodos
       })
@@ -20,6 +24,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     console.log(e)
     return {
       statusCode: 400,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
+      },
       body: JSON.stringify({
         message: 'unable to fetch todos' 
       })

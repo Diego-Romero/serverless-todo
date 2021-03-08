@@ -18,12 +18,20 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
     return { 
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
+      },
       body: JSON.stringify({ item: fullTodoItem })
     }
   } catch (error) {
     console.log('error updating todo', error)
     return {
       statusCode: 400,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
+      },
       body: JSON.stringify({ message: 'Error creating todo'})
     }
   }

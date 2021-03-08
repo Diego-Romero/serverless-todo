@@ -1,4 +1,4 @@
-const apiId = 'xvsXZCKprGvyriHmMIIkCNLAJmjGbJlg'
+const apiId = 'nnpr00xdba'
 export const apiEndpoint = `http://localhost:4000/dev`
 
 export const authConfig = {
