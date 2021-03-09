@@ -1,22 +1,14 @@
 import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
-import * as AWS  from 'aws-sdk'
 import { createLogger } from '../../utils/logger';
-const s3 = new AWS.S3({
-  signatureVersion: 'v4'
-});
+import { getSignedUrl } from '../s3/getSignedUrl';
 
-const bucketName = process.env.TODOS_BUCKET
 const logger = createLogger('upload url')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId;
-  const uploadUrl =  s3.getSignedUrl('putObject', {
-    Bucket: bucketName,
-    Key: todoId,
-    Expires: 300
-  })
+  const uploadUrl =  getSignedUrl(todoId);
 
   logger.info('generating upload url')
 
